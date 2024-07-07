@@ -36,7 +36,7 @@ app.post('/register', async (req,res)=>
             password:hash
         })
 
-        let token = jwt.sign({email, userid: newUser._id}, "secret key");
+        let token = jwt.sign({email, userid: newUser._id}, "secret key", {expiresIn: '10h'});
         res.cookie("token", token);
         res.send(newUser);
     })
@@ -64,9 +64,9 @@ app.post('/login', async (req,res)=>
     {
         if(result)
         {
-            let token = jwt.sign({email, userid: req.body._id}, "secret key")
+            let token = jwt.sign({email, userid: req.body._id}, "secret key", {expiresIn: '10h'})
             res.cookie("token", token);
-            res.send("logged in");
+            res.redirect("profile");
             
         }
 
@@ -80,9 +80,13 @@ app.post('/login', async (req,res)=>
 
 
 //profile
-app.get('/profile', isLoggedIn, (req,res)=>
+app.get('/profile', isLoggedIn,async  (req,res)=>
 {
-    res.send("profile");
+    let {email} = req.user;
+
+    let user = await userModel.findOne({email})
+
+    res.render("profile", {user}); // user is an object so pass as an object
 })
 
 
@@ -101,7 +105,7 @@ app.get('/logout', (req,res)=>
 //protected routes
 function isLoggedIn(req,res,next)
 {
-    if(req.cookies.token === "") return res.send("You must be logged in");
+    if(req.cookies.token === "") return res.redirect("/login");
 
     else{
         let data = jwt.verify(req.cookies.token,"secret key")

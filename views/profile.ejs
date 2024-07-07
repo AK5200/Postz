@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+     <div class="outer w-screen h-screen p-10 bg-zinc-900 text-white">
+        <div class="logout flex justify-end w-full">
+            <a class="p-2 rounded-md bg-red-600" href="/logout">logout</a>
+        </div>
+     <div class="greet">
+      <h3 class="text-white text-4xl mb-1">Hello, <%= user.name %> </h3>  
+      <h5 class="text-white mb-3">Share your thoughts with the world</h5>
+      <form action="">
+      <textarea class="p-3 h-40 w-9/12 bg-zinc-800  rounded-md outline-none resize-none" placeholder="What's on your mind ?"></textarea>
+      <input class="mt-2 p-3 block bg-blue-600 rounded-sm" type="submit" value="Create new post" />
+    </form>
+     </div>
+    </div>
+    
+</body>
+</html>
