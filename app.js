@@ -1,9 +1,10 @@
 const cookieParser = require('cookie-parser');
-const express = require('express')
+const express = require('express');
 const app = express();
-const userModel = require("./models/user")
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const userModel = require("./models/user");
+const postModel = require("./models/post");
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 app.set('view engine', "ejs");
 app.use(express.json())
@@ -84,11 +85,31 @@ app.get('/profile', isLoggedIn,async  (req,res)=>
 {
     let {email} = req.user;
 
-    let user = await userModel.findOne({email})
+    let user = await userModel.findOne({email}).populate("posts");
+
+   console.log(user); // posts have id's not actual content so we need to populate it
 
     res.render("profile", {user}); // user is an object so pass as an object
 })
 
+
+
+//write post
+app.post('/post', isLoggedIn, async (req,res)=>
+{
+    let user = await userModel.findOne({email:req.user.email});
+    let {content} = req.body;
+
+    let post = await postModel.create({
+        user: user._id,
+        content
+    });
+
+    user.posts.push(post._id); // here we r adding posts id's in user's db, so fo accessing them we will need to use --populate-- (wherever needed) like in get profile route we will be populating the posts id.s 
+    await user.save();
+    res.redirect('/profile')
+
+})
 
 
 
