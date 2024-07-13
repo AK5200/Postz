@@ -65,7 +65,7 @@ app.post('/login', async (req,res)=>
     {
         if(result)
         {
-            let token = jwt.sign({email, userid: req.body._id}, "secret key", {expiresIn: '10h'})
+            let token = jwt.sign({email, userid: req.body._id}, "secret key", {expiresIn: '1h'})
             res.cookie("token", token);
             res.redirect("profile");
             
@@ -87,7 +87,7 @@ app.get('/profile', isLoggedIn,async  (req,res)=>
 
     let user = await userModel.findOne({email}).populate("posts");
 
-   console.log(user); // posts have id's not actual content so we need to populate it
+    // console.log(user); // posts have id's not actual content so we need to populate it
 
     res.render("profile", {user}); // user is an object so pass as an object
 })
@@ -111,6 +111,40 @@ app.post('/post', isLoggedIn, async (req,res)=>
 
 })
 
+
+//like
+app.get('/like/:id', isLoggedIn, async(req,res)=>
+{
+    let post = await postModel.findOne({_id:req.params.id}).populate("user");
+     
+    if(post.likes.indexOf(req.user._id) === -1)
+    {
+        post.likes.push(req.user._id);
+    }
+    else
+    {
+        post.likes.splice(post.likes.indexOf(req.user._id),1);
+    }
+
+    await post.save();
+    res.redirect("/profile");
+    
+});
+
+
+//edit
+app.get("/edit/:id",isLoggedIn, async (req,res)=>
+{
+    let post = await postModel.findOne({_id:req.params.id}).populate("user");
+    res.render("edit", {post});
+})
+
+
+app.post("/edit/:id", isLoggedIn, async(req,res)=>{
+
+    let post = await postModel.findOneAndUpdate({_id:req.params.id}, {content: req.body.content});
+    res.redirect('/profile');
+})
 
 
 

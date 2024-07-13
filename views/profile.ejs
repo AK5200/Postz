@@ -24,7 +24,7 @@
         <h3 class="mt-10 text-zinc-600 text-sm"> Your posts.</h3>
 
         <div class="posts mt-2 mb-2">
-            <% user.posts.forEach( (post)=>{ %>
+            <% user.posts.reverse().forEach( (post)=>{ %>
 
                 <div class="post mb-2 h-4/5 w-9/12 bg-zinc-800 rounded-md">
                     <div class="username pl-4 pt-4 pb-1">
@@ -33,9 +33,13 @@
                     <div class="content pl-4 pb-2 h-3/5">
                         <p class="binding-tight"><%= post.content %></p>
                     </div>
+                    <div class="likeNum pl-4"><%= post.likes.length %> likes</div>
                     <div class="tasks flex gap-4 pl-4 pt-2 pr-4 pb-4">
-                        <div class="like text-blue-500 cursor-pointer">like👍</div>
-                        <div class="edit text-zinc-600 cursor-pointer">edit</div>
+                        <a class="like text-blue-500 cursor-pointer" href="/like/<%= post._id %>">
+                            <%= post.likes.indexOf(user._id) === -1 ? "Like" : "Unlike" %>  
+                        </a>
+                        <!-- user._id came from profile route where we sent the wholeuser -->
+                        <a class="edit text-zinc-600 cursor-pointer" href="/edit/<%= post._id %>">edit</a>
                     </div>
                 </div>
 
